@@ -7,11 +7,11 @@ import java.util.Scanner;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 
 import com.gprogrammer.caixa_compras.entities.Compra;
 import com.gprogrammer.caixa_compras.entities.CompraProduto;
 import com.gprogrammer.caixa_compras.entities.Produto;
+import com.gprogrammer.caixa_compras.services.Db;
 public class App {
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
@@ -23,31 +23,25 @@ public class App {
 		
 		System.out.println("_________ COMPRA INICIADA _________");
 		System.out.print("Nome do cliente: ");
-		String cliente = sc.next(); sc.nextLine();
-		
-		Compra compra = new Compra(null, cliente);
-		
+		Compra compra = new Compra(null, sc.next()); sc.nextLine();
 		em.getTransaction().begin();
 		em.persist(compra);
 		em.getTransaction().commit();
-		
-		String jpqlCompra = "select c from Compra c where c.id = " + compra.getId() + ""; 
-		TypedQuery<Compra> tpCompra = em.createQuery(jpqlCompra, Compra.class);
-		compra = tpCompra.getSingleResult();
 		
 		System.out.println("\n_________ PRODUTO _________");
 		do {
 			System.out.print("Nome do produto: ");
 			String nomeProduto = sc.next();sc.nextLine();
 			
-			String jpqlProduto = "Select p from Produto p where p.nome = '" + nomeProduto + "'";
-			TypedQuery<Produto> tqProduto = em.createQuery(jpqlProduto, Produto.class);
-			Produto produto = tqProduto.getSingleResult();
-		
+			Produto produto = new Db().consultarProduto(nomeProduto); 
+					
 			System.out.print("Quantidade: ");
 			int qtde = sc.nextInt();
 			
+			new Db().consultarEstoque(nomeProduto, qtde);
+	
 			for(int i = 0; i < qtde; i++) {
+				
 				CompraProduto compProd = new CompraProduto(new Compra(compra.getId(), compra.getCliente()), new Produto(produto.getId(), produto.getNome(), produto.getValor()));
 				em.getTransaction().begin();
 				em.persist(compProd);

@@ -15,7 +15,7 @@ import javax.persistence.Table;
 @Table(name="tb_produto")
 public class Produto implements Serializable{
 	private static final long serialVersionUID = 7371690340861315352L;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -61,4 +61,5 @@ public class Produto implements Serializable{
 	public String toString() {
 		return "Nome: " + nome + String.format(" | valor unitário: R$ %.2f", valor);
 	}
+
 }
